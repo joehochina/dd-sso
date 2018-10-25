@@ -1,0 +1,89 @@
+package com.youth.course.facade.impl;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.youth.common.tools.ResultInfo;
+import com.youth.course.entity.TClassHour;
+import com.youth.course.facade.IClassHourService;
+import com.youth.course.mapper.TClassHourMapper;
+import com.youth.course.pojo.ClassHourRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @ClassNamw ClassHourServiceImpl
+ * @Description TODO
+ * @Author baibin
+ * @Date 2018/09/2516:29
+ * @Version 1.0
+ */
+@Service
+public class ClassHourServiceImpl implements IClassHourService {
+
+    @Autowired
+    private TClassHourMapper classHourMapper;
+
+
+    @Transactional(rollbackFor={RuntimeException.class,Exception.class})
+    @Override
+    public ResultInfo<?> create(ClassHourRequest classHourRequest) {
+        classHourMapper.save(classHourRequest);
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, classHourMapper.selectByCId(classHourRequest.getcId()));
+    }
+
+    @Override
+    public ResultInfo<?> selectList(Map<String,Integer> map) {
+        Map<String, Object> hashMap = new HashMap<String, Object>();
+        // 分页组件
+        PageHelper.startPage(map.get("page"), map.get("pageSize"));
+        List<TClassHour> devlist = classHourMapper.selectList(map.get("cId"));
+        PageInfo<TClassHour> pageInfo = new PageInfo<TClassHour>(devlist);
+        /*
+        当前页
+         */
+        hashMap.put("pageNum", pageInfo.getPageNum());
+        /*
+        每页数量
+         */
+        hashMap.put("pageSize",pageInfo.getPageSize());
+        /*
+        总记录数
+         */
+        hashMap.put("total", pageInfo.getTotal());
+        /*
+        总页数
+         */
+        hashMap.put("pages", pageInfo.getPages());
+        hashMap.put("data",devlist);
+
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, hashMap);
+    }
+
+    @Override
+    public ResultInfo<?> selectById(int id) {
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS,classHourMapper.selectByCId(id));
+    }
+
+    @Transactional(rollbackFor={RuntimeException.class,Exception.class})
+    @Override
+    public ResultInfo<?> updateClassHour(ClassHourRequest classHourRequest) {
+        classHourMapper.updateClassHour(classHourRequest);
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS,classHourMapper.selectByCId(classHourRequest.getcId()));
+    }
+
+    @Transactional(rollbackFor={RuntimeException.class,Exception.class})
+    @Override
+    public ResultInfo<?> updateClassHourState(Map<String,Integer> map) {
+        ClassHourRequest classHourRequest = new ClassHourRequest();
+        classHourRequest.setcId(map.get("cId"));
+        classHourRequest.setUserToken(map.get("userToken"));
+        classHourRequest.setState(map.get("state"));
+        classHourMapper.updateClassHour(classHourRequest);
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
+    }
+}

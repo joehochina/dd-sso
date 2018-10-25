@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="youth-sso-webapp:war">
+    <output-path>$PROJECT_DIR$/youth-sso/youth-sso-webapp/target</output-path>
+    <root id="archive" name="youth-sso.war">
+      <element id="artifact" artifact-name="youth-sso-webapp:war exploded" />
+    </root>
+  </artifact>
+</component>
